@@ -1,0 +1,145 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./../css/bootstrap.css">
+    <style>
+
+        img{
+            margin: auto;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-sm bg-light">
+        <div class="container-fluid">
+            <!-- Links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <h1>Series</h1>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="principal.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="nuevoPersonaje.html">Nuevo Personaje </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="modificarPersonaje.html">Modificar Personaje </a>
+                </li>
+                <li class="nav-item dropdown" id="opcionesEquipos">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Series
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="divSeries">
+
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <h1>Perosnajes y series</h1>
+    <form>
+        <div class="mb-3 mt-3">
+            <label class="form-label">Seleccione una serie:</label>
+            <select name="" id="selserie"></select>
+        </div>
+        <div class="mb-3 mt-3">
+            <label class="form-label">Seleccione un Personaje:</label>
+            <select name="" id="selper"></select>
+        </div>
+        
+        
+
+        <button class="btn btn-primary" id="BtnModf">Modificar Perosnaje</button>
+
+    </form>
+
+    <script src="./../js/jquery-3.7.1.min.js"></script>
+    <script src="./../js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+
+
+
+            cargarperosnajes();
+            cargarSeries();
+            function cargarperosnajes() {
+                var enlace = "https://apiseriespersonajes.azurewebsites.net/api/Personajes"
+                $.getJSON(enlace, function (data) {
+
+                    $.each(data, function (index, serie) {
+                     
+
+                        var select=$("<option>",{
+                            "text": serie.nombre,
+                            "value": serie.idPersonaje,
+                            "class": "dropdown-item",
+                        })
+                        $("#selper").append(select);
+                       
+                    })
+
+
+                })
+
+            }
+            function cargarSeries() {
+                var enlace = "https://apiseriespersonajes.azurewebsites.net/api/Series"
+                $.getJSON(enlace, function (data) {
+
+                    $.each(data, function (index, serie) {
+                        var opcion = $("<a>", {
+                            "id": serie.idSerie,
+                            "text": serie.nombre,
+                            "value": serie.idSerie,
+                            "class": "dropdown-item",
+                            "href": "serie.html?id=" + serie.idSerie
+                        });
+
+                        var select=$("<option>",{
+                            "text": serie.nombre,
+                            "value": serie.idSerie,
+                            "class": "dropdown-item",
+                        })
+                        $("#selserie").append(select);
+                        $("#divSeries").append(opcion);
+                    })
+
+
+                })
+
+            }
+        
+            $("#BtnModf").click(function (event) {
+                event.preventDefault();
+                var personaje= $("#selper").val()
+                var serie= $("#selserie").val()
+                
+                var url = "https://apiseriespersonajes.azurewebsites.net/api/Personajes/"+personaje+"/"+serie
+
+                $.ajax({
+                        "url": url,
+                        "type": "PUT",
+                        
+                        
+                        success: function () {
+                            console.log("insertado");
+                            window.location.href = "personajes.html?id="+serie;
+                        }
+                    })
+            })
+        })
+
+    </script>
+</body>
+
+</html>
